@@ -1,36 +1,28 @@
 require("dotenv").config();
 const fs = require("fs/promises");
 const pdf = require("pdf-parse");
+const { GoogleGenerativeAI } = require("@google/generative-ai");
 
-const { CohereClient } = require("cohere-ai");
+const PDF_PATH = "sample.pdf";
 
-const cohere = new CohereClient({
-  token: process.env.COHERE_API_KEY,
-});
-
-const PDF_PATH = "sample2.pdf";
-
-const SUMMARIZER_OPTIONS = {
-  length: "medium",
-  format: "paragraph",
-  model: "summarize-xlarge",
-  temperature: 0.3,
-};
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 async function summarizePDF(filePath) {
   try {
     const dataBuffer = await fs.readFile(filePath);
     const data = await pdf(dataBuffer);
-
     const textContent = data.text;
 
-    const response = await cohere.summarize({
-      text: textContent,
-      ...SUMMARIZER_OPTIONS,
-    });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+    const prompt = `Summarize the following document in a medium-length paragraph:\n\n${textContent}`;
+
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const summary = response.text();
 
     console.log("--------Document Summary-------\n");
-    console.log(response.summary);
+    console.log(summary);
   } catch (error) {
     console.error("Error", error);
   }
