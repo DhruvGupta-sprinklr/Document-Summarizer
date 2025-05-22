@@ -3,7 +3,7 @@ const fs = require("fs/promises");
 const pdf = require("pdf-parse");
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 
-const PDF_PATH = "sample.pdf";
+const PDF_PATH = "Sprinklr.pdf";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
@@ -15,10 +15,17 @@ async function summarizePDF(filePath) {
 
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-    const prompt = `Summarize the following document in a medium-length paragraph:\n\n${textContent}`;
+    const prompt = `SYSTEM:
+    You are an expert document analyst and summarizer. Follow these steps precisely:
+    1. Identify logical chapters or thematic sections in teh provided text.
+    2. For each chapter: - Label it "Chapter 1", "Chapter2" etc and write one medium length paragraph capturing its key ideas.
+    3. After all chapters, write a concise "Conclusion" paragraphn that synthesizes the document's overall message and takeways.
+    
+    USER:
+    ${textContent}`.trim();
 
     const result = await model.generateContent(prompt);
-    const response = await result.response;
+    const response = result.response;
     const summary = response.text();
 
     console.log("--------Document Summary-------\n");
