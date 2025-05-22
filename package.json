@@ -1,0 +1,18 @@
+{
+  "dependencies": {
+    "cohere-ai": "^7.17.1",
+    "dotenv": "^16.5.0",
+    "pdf-parse": "^1.1.1"
+  },
+  "name": "document-summarizer",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {},
+  "description": ""
+}
